@@ -1,2 +1,4 @@
 # homologr
-Biological sequence homology inference with R
+Homology inference across multiple species
+
+
