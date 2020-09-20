@@ -1,4 +1,4 @@
 # homologr
-Homology inference across multiple species
+## Homology inference across multiple species
 
 
