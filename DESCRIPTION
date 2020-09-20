@@ -11,13 +11,12 @@ Description: Detection of homologous genes, RNAs, and transposable elements acro
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 LinkingTo: 
     Rcpp
 Imports: 
     Rcpp,
-    orthologr,
-    metablastr
+    rdiamond
 Suggests: 
     testthat
-Remotes: HajkD/metablastr, HajkD/orthologr
+Remotes: drostlab/rdiamond
