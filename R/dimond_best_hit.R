@@ -29,7 +29,6 @@
 #' @param diamond_exec_path a path to the DIAMOND executable or \code{conda/miniconda} folder.
 #' @param add_makedb_options a character string specifying additional makedb options that shall be passed on to the diamond makedb command line call, e.g. \code{add_make_options = "--taxonnames"} (Default is \code{add_diamond_options = NULL}).
 #' @param add_diamond_options a character string specifying additional diamond options that shall be passed on to the diamond command line call, e.g. \code{add_diamond_options = "--block-size 4.0 --compress 1 --no-self-hits"} (Default is \code{add_diamond_options = NULL}).
-#' @author Hajk-Georg Drost
 #' @param output_path a path to the location were the DIAMOND best hit output shall be stored. E.g. \code{output_path} = \code{getwd()}
 #' to store it in the current working directory, or \code{output_path} = \code{file.path("put", "your", "path", "here")}.
 #' @author Hajk-Georg Drost
