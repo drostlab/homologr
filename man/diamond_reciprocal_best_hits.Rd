@@ -120,6 +120,4 @@ rec_best_hits
 }
 \author{
 Hajk-Georg Drost
-
-Hajk-Georg Drost
 }

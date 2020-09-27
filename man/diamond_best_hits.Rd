@@ -115,8 +115,9 @@ best_hits
 }
 
 }
+\seealso{
+\code{\link{diamond_reciprocal_best_hits}}, \code{\link[rdiamond]{diamond_protein_to_protein}}
+}
 \author{
-Hajk-Georg Drost
-
 Hajk-Georg Drost
 }
