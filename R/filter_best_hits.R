@@ -3,6 +3,7 @@
 #' when e-values are equal
 #' @param x a tibble storing gene locus ids, splice variant ids, and blast output for filtering
 #' @author Hajk-Georg Drost
+#'
 filter_best_hits <- function(x) {
 
   if (nrow(x) == 0)
