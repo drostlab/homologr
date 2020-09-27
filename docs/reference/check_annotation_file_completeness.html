@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • homologr</title>
+<title>Check whether an annotation file contains outlier lines — check_annotation_file_completeness • homologr</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,11 @@
 
 
 
-<meta property="og:title" content="Changelog" />
+<meta property="og:title" content="Check whether an annotation file contains outlier lines — check_annotation_file_completeness" />
+<meta property="og:description" content="Some annotation files include lines with character lengths greater than 65000. This causes problems when trying to import such annotation files into R using import.
+To overcome this issue, this function screens for such lines
+in a given annotation file and removes these lines so that
+import can handle the file." />
 
 
 
@@ -58,7 +62,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -105,41 +109,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
-      
+    <h1>Check whether an annotation file contains outlier lines</h1>
+    
+    <div class="hidden name"><code>check_annotation_file_completeness.Rd</code></div>
     </div>
 
-    <div id="homologr-v001" class="section level1">
-<h1 class="page-header" data-toc-text="0.0.1">
-<a href="#homologr-v001" class="anchor"></a>homologr v0.0.1</h1>
-<div id="new-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#new-functions" class="anchor"></a>New functions:</h2>
-<ul>
-<li>adding <code><a href="../reference/diamond_best_hits.html">diamond_best_hits()</a></code>: Perform a DIAMOND best hit search</li>
-<li>adding <code><a href="../reference/diamond_reciprocal_best_hits.html">diamond_reciprocal_best_hits()</a></code>: Perform a DIAMOND best reciprocal hit search</li>
-<li>adding <code><a href="../reference/filter_best_hits.html">filter_best_hits()</a></code>: Helper function to select best DIAMOND hit based on minimum evalue</li>
-<li>adding <code><a href="../reference/codon_aln.html">codon_aln()</a></code>: Codon Alignments using PAL2NAL</li>
-<li>adding <code><a href="../reference/dnds.html">dnds()</a></code>: Genome-wide pairwise inference of synonymous versus non-synonymous substitution rates (dnds)</li>
-<li>adding <code><a href="../reference/dnds_across_multiple_species.html">dnds_across_multiple_species()</a></code>: Genome-wide pairwise inference of synonymous versus non-synonymous substitution rates (dnds) across multiple subject organisms</li>
-<li>adding <code><a href="../reference/import_cds.html">import_cds()</a></code>: Import the coding sequences from a fasta file</li>
-<li>adding <code><a href="../reference/import_dnds_across_multiple_species.html">import_dnds_across_multiple_species()</a></code>: Import ‘dnds’ tables by gene locus and splice varaint for a set of species</li>
-<li>adding <code><a href="../reference/import_proteome.html">import_proteome()</a></code>: Import protein sequences from a ‘fasta’ file</li>
-<li>adding <code><a href="../reference/internal_dnds.html">internal_dnds()</a></code>: Internal dnds computations</li>
-<li>adding <code><a href="../reference/pairwise_aln.html">pairwise_aln()</a></code>: Pairwise Global Sequence Alignments</li>
-<li>adding <code><a href="../reference/substitutionrate.html">substitutionrate()</a></code>: Internal function for dNdS computations</li>
-<li>adding <code><a href="../reference/dnds_across_multiple_species_plot.html">dnds_across_multiple_species_plot()</a></code>: Plot pairwise dN, dS, or dN/dS distributions of orthologous genes across species</li>
-</ul>
-</div>
-</div>
-  </div>
+    <div class="ref-description">
+    <p>Some annotation files include lines with character lengths greater than 65000. This causes problems when trying to import such annotation files into R using <code><a href='https://rdrr.io/pkg/rtracklayer/man/export.html'>import</a></code>.
+To overcome this issue, this function screens for such lines
+in a given annotation file and removes these lines so that
+<code><a href='https://rdrr.io/pkg/rtracklayer/man/export.html'>import</a></code> can handle the file.</p>
+    </div>
 
+    <pre class="usage"><span class='fu'>check_annotation_file_completeness</span>(
+  <span class='kw'>annotation_file</span>,
+  remove_annotation_outliers = <span class='fl'>FALSE</span>
+)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>annotation_file</th>
+      <td><p>a file path tp the annotation file.</p></td>
+    </tr>
+    <tr>
+      <th>remove_annotation_outliers</th>
+      <td><p>shall outlier lines be removed from the input <code>annotation_file</code>?
+If yes, then the initial <code>annotation_file</code> will be overwritten and the removed outlier lines will be stored at <code><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></code>
+for further exploration.</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Hajk-Georg Drost</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'># download an example annotation file from NCBI RefSeq</span>
+<span class='kw'>Ath_path</span> <span class='op'>&lt;-</span> <span class='kw'>biomartr</span>::<span class='fu'><a href='https://docs.ropensci.org/biomartr/reference/getGFF.html'>getGFF</a></span>(organism = <span class='st'>"Arabidopsis thaliana"</span>)
+<span class='co'># run annotation file check on the downloaded file</span>
+<span class='fu'>check_annotation_file_completeness</span>(<span class='kw'>Ath_path</span>)
+<span class='co'># several outlier lines were detected, thus we re-run the</span>
+<span class='co'># function using 'remove_annotation_outliers = TRUE'</span>
+<span class='co'># to remove the outliers and overwrite the file</span>
+<span class='fu'>check_annotation_file_completeness</span>(<span class='kw'>Ath_path</span>, remove_annotation_outliers = <span class='fl'>TRUE</span>)
+}
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
 
 
