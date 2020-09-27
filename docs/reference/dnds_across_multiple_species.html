@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Perform a DIAMOND best reciprocal hit search — diamond_reciprocal_best_hits • homologr</title>
+<title>Genome-wide pairwise inference of synonymous versus non-synonymous substitution rates (dnds) across multiple subject organisms — dnds_across_multiple_species • homologr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Perform a DIAMOND best reciprocal hit search — diamond_reciprocal_best_hits" />
-<meta property="og:description" content="This function performs a DIAMOND search (best reciprocal hit) of a given set of protein sequences against a given database." />
+<meta property="og:title" content="Genome-wide pairwise inference of synonymous versus non-synonymous substitution rates (dnds) across multiple subject organisms — dnds_across_multiple_species" />
+<meta property="og:description" content="This function allows you to compute dnds maps between a query organism
+and a set subject organisms stored in the same folder. The corresponding dnds maps are then stored in an output folder." />
 
 
 
@@ -106,20 +107,24 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Perform a DIAMOND best reciprocal hit search</h1>
+    <h1>Genome-wide pairwise inference of synonymous versus non-synonymous substitution rates (dnds) across multiple subject organisms</h1>
     
-    <div class="hidden name"><code>diamond_reciprocal_best_hits.Rd</code></div>
+    <div class="hidden name"><code>dnds_across_multiple_species.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function performs a DIAMOND search (best reciprocal hit) of a given set of protein sequences against a given database.</p>
+    <p>This function allows you to compute dnds maps between a query organism
+and a set subject organisms stored in the same folder. The corresponding dnds maps are then stored in an output folder.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>diamond_reciprocal_best_hits</span>(
+    <pre class="usage"><span class='fu'>dnds_across_multiple_species</span>(
   <span class='kw'>query</span>,
-  <span class='kw'>subject</span>,
-  is_subject_db = <span class='fl'>FALSE</span>,
+  <span class='kw'>subjects_folder</span>,
+  <span class='kw'>output_folder</span>,
   format = <span class='st'>"fasta"</span>,
+  ortho_detection = <span class='st'>"DIAMOND-RBH"</span>,
+  delete_corrupt_cds = <span class='fl'>FALSE</span>,
+  store_locally = <span class='fl'>FALSE</span>,
   sensitivity_mode = <span class='st'>"ultra-sensitive"</span>,
   out_format = <span class='st'>"csv"</span>,
   evalue = <span class='st'>"1E-5"</span>,
@@ -129,7 +134,16 @@
   diamond_exec_path = <span class='kw'>NULL</span>,
   add_makedb_options = <span class='kw'>NULL</span>,
   add_diamond_options = <span class='kw'>NULL</span>,
-  output_path = <span class='kw'>NULL</span>
+  min_qry_coverage_hsp = <span class='fl'>50</span>,
+  min_qry_perc_identity = <span class='fl'>10</span>,
+  aa_aln_type = <span class='st'>"pairwise"</span>,
+  aa_aln_tool = <span class='st'>"NW"</span>,
+  codon_aln_tool = <span class='st'>"pal2nal"</span>,
+  dnds_estimation = <span class='st'>"Li"</span>,
+  progress_bar = <span class='fl'>TRUE</span>,
+  diamond_hit_tables = <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>output_folder</span>, <span class='st'>"diamond_hit_tables"</span>),
+  sep = <span class='st'>";"</span>,
+  <span class='kw'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -137,21 +151,35 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>query</th>
-      <td><p>a character string specifying the path to the protein sequence file of interest (query organism).</p></td>
+      <td><p>a character string specifying the path to the CDS file of the query organism.</p></td>
     </tr>
     <tr>
-      <th>subject</th>
-      <td><p>a character string specifying the path to the protein sequence file of interest (subject organism).</p></td>
+      <th>subjects_folder</th>
+      <td><p>a character string specifying the path to the folder where CDS files of the subject organisms are stored.</p></td>
     </tr>
     <tr>
-      <th>is_subject_db</th>
-      <td><p>logical specifying whether or not the <code>subject</code> file is a file in <code>fasta</code> format (<code>is_subject_db = FALSE</code>; default)
-or a <code>fasta</code> file that was previously converted into a blast-able database using <code>diamond makedb</code> (<code>is_subject_db = TRUE</code>).</p></td>
+      <th>output_folder</th>
+      <td><p>a character string specifying the path to the folder where output dnds maps should be stored.</p></td>
     </tr>
     <tr>
       <th>format</th>
-      <td><p>a character string specifying the file format of the sequence file, e.g. <code>format</code> = <code>"fasta"</code>.
-Default is <code>format</code> = <code>"fasta"</code>.</p></td>
+      <td><p>a character string specifying the file format of the sequence file, e.g. <code>format = "fasta"</code>, <code>format = "gbk"</code>. See
+<code><a href='import_proteome.html'>import_proteome</a></code> for more details.</p></td>
+    </tr>
+    <tr>
+      <th>ortho_detection</th>
+      <td><p>a character string specifying the orthology inference method that shall be performed to detect orthologous genes. Options are:</p><ul>
+<li><p><code>ortho_detection ="DIAMOND-BH"</code>: DIAMOND unidirectional best hit.</p></li>
+<li><p><code>ortho_detection = "DIAMOND-RBH"</code>: DIAMOND reciprocal/bidirectional best hit (default).</p></li>
+</ul></td>
+    </tr>
+    <tr>
+      <th>delete_corrupt_cds</th>
+      <td><p>a logical value indicating whether sequences with corrupt base triplets should be removed from the input <code>file</code>. This is the case when the length of coding sequences cannot be divided by 3 and thus the coding sequence contains at least one corrupt base triplet.</p></td>
+    </tr>
+    <tr>
+      <th>store_locally</th>
+      <td><p>a logical value indicating whether or not alignment files shall be stored locally rather than in <code><a href='https://rdrr.io/r/base/tempfile.html'>tempdir()</a></code>.</p></td>
     </tr>
     <tr>
       <th>sensitivity_mode</th>
@@ -175,7 +203,8 @@ Available options are:</p><ul>
     </tr>
     <tr>
       <th>evalue</th>
-      <td><p>Expectation value (E) threshold for saving hits (default: <code>evalue = 0.001</code>).</p></td>
+      <td><p>a character string specifying the e-value for DIAMOND based orthology inference that is performed
+in the process of dnds computations. Please use the scientific notation.</p></td>
     </tr>
     <tr>
       <th>max_target_seqs</th>
@@ -183,7 +212,7 @@ Available options are:</p><ul>
     </tr>
     <tr>
       <th>cores</th>
-      <td><p>number of cores for parallel DIAMOND searches.</p></td>
+      <td><p>number of computing cores that shall be used to perform parallelized computations.</p></td>
     </tr>
     <tr>
       <th>hard_mask</th>
@@ -202,63 +231,92 @@ Available options are:</p><ul>
       <td><p>a character string specifying additional diamond options that shall be passed on to the diamond command line call, e.g. <code>add_diamond_options = "--block-size 4.0 --compress 1 --no-self-hits"</code> (Default is <code>add_diamond_options = NULL</code>).</p></td>
     </tr>
     <tr>
-      <th>output_path</th>
-      <td><p>a path to the location were the DIAMOND best hit output shall be stored. E.g. <code>output_path</code> = <code><a href='https://rdrr.io/r/base/getwd.html'>getwd()</a></code>
-to store it in the current working directory, or <code>output_path</code> = <code><a href='https://rdrr.io/r/base/file.path.html'>file.path("put", "your", "path", "here")</a></code>.</p></td>
+      <th>min_qry_coverage_hsp</th>
+      <td><p>minimum <code>qcovhsp</code> (= query coverage of the HSP) of an orthologous hit (a value between 1 and 100).</p></td>
+    </tr>
+    <tr>
+      <th>min_qry_perc_identity</th>
+      <td><p>minimum <code>perc_identity</code> (= percent sequence identity between query and selected HSP) of an orthologous hit (a value between 1 and 100).</p></td>
+    </tr>
+    <tr>
+      <th>aa_aln_type</th>
+      <td><p>a character string specifying the amino acid alignement type: <code>aa_aln_type = "multiple"</code> or <code>aa_aln_type = "pairwise"</code>.
+Default is <code>aa_aln_type = "pairwise"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>aa_aln_tool</th>
+      <td><p>a character string specifying the program that should be used e.g. "clustalw".</p></td>
+    </tr>
+    <tr>
+      <th>codon_aln_tool</th>
+      <td><p>a character string specifying the codon alignment tool that shall be used.
+Default is <code>codon_aln_tool = "pal2nal"</code>. Right now only "pal2nal" can be selected as codon alignment tool.</p></td>
+    </tr>
+    <tr>
+      <th>dnds_estimation</th>
+      <td><p>a character string specifying the dnds estimation method, e.g. <code>dnds_estimation = "Li"</code> (default).</p></td>
+    </tr>
+    <tr>
+      <th>progress_bar</th>
+      <td><p>should a progress bar be shown. Default is <code>progress_bar = TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>diamond_hit_tables</th>
+      <td><p>a file path to a folder where DIAMOND hit tables internally generated with <code><a href='diamond_best_hits.html'>diamond_best_hits</a></code> or <code><a href='diamond_reciprocal_best_hits.html'>diamond_reciprocal_best_hits</a></code> will be stored.</p></td>
+    </tr>
+    <tr>
+      <th>sep</th>
+      <td><p>a file separator that is used to store maps as csv file.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters that shall be passed to  <code><a href='dnds.html'>dnds</a></code>.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A tibble as returned by the <code>diamond_reciprocal_best_hits</code> function, storing the <code>query_ids</code>
-in the first column and the <code>subject_ids</code> (reciprocal best hit homologs) in the second column.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Given a set of protein sequences (query sequences), a best hit diamond search (DRBH) is being performed.</p>
+    <p>Given a query organism and a set of subject organisms that are stored in the same folder,
+this function crawls through all subject organism and as a first step computes the pairwise
+dnds Maps between query and subject organism and as a second step stores the corresponding Map
+in an output folder.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='diamond_best_hits.html'>diamond_best_hits</a></code>, <code><a href='https://rdrr.io/pkg/rdiamond/man/diamond_protein_to_protein.html'>diamond_protein_to_protein</a></code></p></div>
+    <div class='dont-index'><p><code><a href='dnds.html'>dnds</a></code>, <code><a href='import_dnds_across_multiple_species.html'>import_dnds_across_multiple_species</a></code>, <code><a href='import_dnds_tbl.html'>import_dnds_tbl</a></code></p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Hajk-Georg Drost</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='co'># performing homology inference using the diamond best reciprocal hit (DRBH) method using protein sequences</span>
-<span class='kw'>rec_best_hits</span> <span class='op'>&lt;-</span> <span class='fu'>diamond_reciprocal_best_hits</span>(
-query   = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-subject = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_lyra_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-seq_type     = <span class='st'>"protein"</span>)
-<span class='co'># look at results</span>
-<span class='kw'>rec_best_hits</span>
+<span class='co'># running dnds across several species</span>
+<span class='fu'>dnds_across_multiple_species</span>(
+   query      = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_cds.fasta'</span>, package = <span class='st'>'homologr'</span>),
+   subjects_folder = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/map_gen_example'</span>, package = <span class='st'>'homologr'</span>),
+   aa_aln_type      = <span class='st'>"pairwise"</span>,
+   aa_aln_tool      = <span class='st'>"NW"</span>,
+   codon_aln_tool   = <span class='st'>"pal2nal"</span>,
+   dnds_estimation  = <span class='st'>"Li"</span>,
+   output_folder   = <span class='st'>"homologr_dnds_maps"</span>,
+   quiet           = <span class='fl'>TRUE</span>,
+   cores      = <span class='fl'>1</span>
+)
 
-<span class='co'># store the DIAMOND output file to the current working directory</span>
-<span class='kw'>rec_best_hits</span> <span class='op'>&lt;-</span> <span class='fu'>diamond_reciprocal_best_hits</span>(
-query  = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-subject = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_lyra_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-seq_type     = <span class='st'>"protein"</span>,
-output_path  = <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>())
-<span class='co'># look at results</span>
-<span class='kw'>rec_best_hits</span>
-
-<span class='co'># run diamond_reciprocal_best_hits() with multiple cores</span>
-<span class='kw'>rec_best_hits</span> <span class='op'>&lt;-</span> <span class='fu'>diamond_reciprocal_best_hits</span>(
-query   = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-subject = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_lyra_aa.fasta'</span>, package = <span class='st'>'homologr'</span>),
-cores   = <span class='fl'>2</span>)
-<span class='co'># look at results</span>
-<span class='kw'>rec_best_hits</span>
-
-<span class='co'># performing homology inference using the diamond best hit (DRBH) method and</span>
-<span class='co'># specifying the path to the DIAMOND executable (here miniconda path)</span>
-<span class='kw'>rec_best_hits</span> <span class='op'>&lt;-</span> <span class='fu'>diamond_reciprocal_best_hits</span>(
-query  = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_aa.fasta'</span>, package = <span class='st'>'orthologr'</span>),
-subject = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_lyra_aa.fasta'</span>, package = <span class='st'>'orthologr'</span>),
-diamond_exec_path = <span class='st'>"/opt/miniconda3/bin/"</span>)
-<span class='co'># look at results</span>
-<span class='kw'>rec_best_hits</span>
+<span class='co'># running dnds across several species using DIAMOND executable</span>
+<span class='co'># path '/opt/miniconda3/bin/'</span>
+<span class='fu'>dnds_across_multiple_species</span>(
+   query      = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/ortho_thal_cds.fasta'</span>, package = <span class='st'>'homologr'</span>),
+   subjects_folder = <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>'seqs/map_gen_example'</span>, package = <span class='st'>'homologr'</span>),
+   diamond_exec_path = <span class='st'>"/opt/miniconda3/bin/"</span>,
+   aa_aln_type      = <span class='st'>"pairwise"</span>,
+   aa_aln_tool      = <span class='st'>"NW"</span>,
+   codon_aln_tool   = <span class='st'>"pal2nal"</span>,
+   dnds_estimation  = <span class='st'>"Li"</span>,
+   output_folder   = <span class='st'>"homologr_dnds_maps"</span>,
+   quiet           = <span class='fl'>TRUE</span>,
+   cores      = <span class='fl'>1</span>
+)
 }
-
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
